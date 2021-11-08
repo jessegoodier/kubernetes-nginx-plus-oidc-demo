@@ -6,9 +6,9 @@ set -xe
 # get kube-dns clusterIP
 
 # install kic 
-helm repo add nginx-stable https://helm.nginx.com/stable
-helm repo update
-helm install plus nginx-stable/nginx-ingress -f values-plus.yaml --namespace nginx-ingress --create-namespace
+# helm repo add nginx-stable https://helm.nginx.com/stable
+# helm repo update
+# helm install plus nginx-stable/nginx-ingress -f values-plus.yaml --namespace nginx-ingress --create-namespace
 
 
 # pod needs to be ready before we should look for external IP
@@ -27,19 +27,19 @@ do
 done
 echo $EXTERNALIP
 
-gcloud dns record-sets \
-    update keycloak.nginx.rocks \
-    --rrdatas="$EXTERNALIP" \
-    --type=A --ttl=30 --zone=nginx-rocks
+# gcloud dns record-sets \
+#     update keycloak.aks.nginx.rocks \
+#     --rrdatas="$EXTERNALIP" \
+#     --type=A --ttl=30 --zone=nginx-rocks
 
-gcloud dns record-sets \
-    update webapp.nginx.rocks \
-    --rrdatas="$EXTERNALIP" \
-    --type=A --ttl=30 --zone=nginx-rocks
+# gcloud dns record-sets \
+#     update webapp.aksnginx.rocks \
+#     --rrdatas="$EXTERNALIP" \
+#     --type=A --ttl=30 --zone=nginx-rocks
 
 kubectl apply -f ./nginx-ingress-headless.yaml
 kubectl apply -f ./keycloak
-KEYCLOAK_ADDRESS=keycloak.nginx.rocks
+KEYCLOAK_ADDRESS=keycloak.aks.nginx.rocks
 
 # wait for keycloak to be availible
 until $(curl -k --output /dev/null --silent --head --fail https://$KEYCLOAK_ADDRESS); do
